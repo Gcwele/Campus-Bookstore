@@ -8,7 +8,8 @@ db = SQLAlchemy()
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
-    username = db.Column(db.String(100))
+    name = db.Column(db.String(100))
+    surname = db.Column(db.String(100))
     password_hash = db.Column(db.String(150))
     date_joined = db.Column(db.DateTime(), default=datetime.utcnow)
 
@@ -53,8 +54,6 @@ class Cart(db.Model):
 
     user_link = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     book_link = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
-
-    # customer product
 
     def __str__(self):
         return '<Cart %r>' % self.id
