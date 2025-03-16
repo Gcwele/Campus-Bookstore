@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+
+    <script src="https://kit.fontawesome.com/e24507d923.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet" href="../static/css/all.min.css">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+
+    <title>Book Store | {% block title %} {% endblock %}</title>
+
+    <style>
+        /* Make sure body fills entire viewport */
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: rgb(90, 110, 110);
+        }
+
+        /* Ensure content takes available space before footer */
+        .content-wrapper {
+            flex: 1;
+            padding-bottom: 20px;
+        }
+
+        /* Fixed Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        /* Add padding to prevent content from being hidden under navbar */
+        .page-content {
+            padding-top: 80px;
+        }
+
+        /* Footer stays at the bottom */
+        footer {
+            background-color: orange;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fixed Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#" style="color: orange; font-size: 30px; margin-right: -2px;">
+          <img src="../media/logo.png" style="width: 30px; height: auto;" alt="" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/" style="font-family: cursive; font-size: 19px;">Book<span style="color: orange;">Store</span></a>
+            </li>
+              {% if current_user.email == "Admin@gmail.com" %}
+              <li class="nav-item">
+              <a class="nav-link text-grey" href="/add-shop-items" style="font-size: 17px;">Add Books</a>
+            </li>
+              <li class="nav-item">
+              <a class="nav-link text-grey" href="/shop-items" style="font-size: 17px;">All Books</a>
+            </li>
+              {% else %}
+              <li class="nav-item">
+              <a class="nav-link text-grey" href="/about" style="font-size: 17px;">About Us</a>
+             </li>
+            <li class="nav-item">
+              <a class="nav-link text-grey" href="#" style="font-size: 17px;">Contact us</a>
+            </li>
+              <li class="nav-item">
+              <a class="nav-link text-grey" href="/shop-items" style="font-size: 17px;">All Books</a>
+            </li>
+              {% endif %}
+          </ul>
+
+          <form class="d-flex" role="search" action="/search" style="margin-right: 170px;" method="POST">
+            <input class="form-control me-2" name="search" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn" type="submit">Search</button>
+          </form>
+        </div>
+
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item mx-2" id="items">
+            <a class="nav-link text-grey" href="/cart">
+              <span class="badge bg-success"></span> Cart <i class="bi bi-cart3"></i>
+            </a>
+          </li>
+
+          <li class="nav-item mx-2" id="items">
+            <a class="nav-link text-grey" href="#"><span class="badge bg-success"></span> WishList <i class="bi bi-heart-fill"></i></a>
+          </li>
+
+          <li class="nav-item dropdown mx-2">
+            <a class="nav-link dropdown-toggle text-grey" href="#" role="button" id="profileDropdown"
+            data-bs-toggle="dropdown" aria-hidden="false">
+              Account
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+              {% if current_user.is_authenticated %}
+              <li><a class="dropdown-item" href="/profile/{{ current_user.id }}">Profile <i class="bi bi-person-fill"></i></a></li>
+              <li><a class="dropdown-item" href="/orders">Orders <i class="bi bi-truck"></i></a></li>
+              <li><a class="dropdown-item" href="/logout">Log Out <i class="bi bi-box-arrow-in-right"></i></a></li>
+              {% else %}
+              <li><a class="dropdown-item" href="/login">Login <i class="bi bi-box-arrow-in-left"></i></a></li>
+              {% endif %}
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="content-wrapper">
+      <div class="page-content">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 5px;">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+
+        {% block body %}
+        {% endblock %}
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <a href="#" style="color: white;">Book Store</a> | <span>
+        <i class="fa-sharp fa-regular fa-copyright"></i></span> 2025 All rights reserved
+    </footer>
+
+    <script src="{{ url_for( 'static', filename='js/owl.carousel.min.js') }}"></script>
+    <script src="{{ url_for( 'static', filename='js/all.min.js') }}"></script>
+    <script src="{{ url_for( 'static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for( 'static', filename='js/myScript.js') }}"></script>
+
+</body>
+</html>
