@@ -5,13 +5,17 @@ from . import db
 
 views = Blueprint('views', __name__)
 
+
 @views.route('/')
 def home():
+    items = Product.query.filter_by(flash_sale=True).all()
 
-    items = Product.query.filter_by(flash_sale=True)
+    if current_user.email == "Admin@gmail.com":
+         return render_template('admin_dashboard.html', items=items)
 
-    return render_template('home.html', items=items, cart=Cart.query.filter_by(customer_link=current_user.id).all()
-                           if current_user.is_authenticated else [])
+    else:
+         return render_template('home.html', items=items,
+                                   cart=Cart.query.filter_by(customer_link=current_user.id).all())
 
 
 @views.route('/add-to-cart/<int:item_id>')
@@ -127,6 +131,7 @@ def remove_cart():
         }
 
         return jsonify(data)
+
 
 
 
