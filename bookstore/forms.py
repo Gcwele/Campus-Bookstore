@@ -1,7 +1,11 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, FloatField, PasswordField, EmailField, BooleanField, SubmitField, SelectField
-from wtforms.validators import DataRequired, length, NumberRange
+from wtforms.validators import DataRequired, length, NumberRange, ValidationError
 from flask_wtf.file import FileField, FileRequired
+
+
+
+
 
 
 class SignUpForm(FlaskForm):
@@ -33,6 +37,19 @@ class ShopItemsForm(FlaskForm):
     product_picture = FileField('Product Picture', validators=[DataRequired()])
     flash_sale = BooleanField('Flash Sale')
 
+    department = SelectField('Department', choices=[
+        ('Information Technology', 'Information Technology'),
+        ('Engineering', 'Engineering'),
+        ('Hospitality', 'Hospitality'),
+        ('Nursing', 'Nursing'),
+        ('Agriculture', 'Agriculture'),
+        ('Information Management', 'Information Management'),
+        ('Education', 'Education'),
+        ('Food Science', 'Food Science')
+    ], validators=[DataRequired()])
+
+
+
     add_product = SubmitField('Add Product')
     update_product = SubmitField('Update')
 
@@ -43,6 +60,8 @@ class OrderForm(FlaskForm):
                                                         ('Delivered', 'Delivered'), ('Canceled', 'Canceled')])
 
     update = SubmitField('Update Status')
+
+
 
 
 
