@@ -19,21 +19,11 @@
         <p style="color: #666; margin-bottom: 20px;">{{customer.email}}</p>
 
         <!-- Buttons -->
-        <button
-            style="width: 100%; padding: 10px; background-color: white; color: orange; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-bottom: 10px;"
-            onmouseover="this.style.backgroundColor='#ff9f3b'; this.style.transform='scale(1.05)';"
-            onmouseout="this.style.backgroundColor='#ff7f00'; this.style.transform='scale(1)';">
-            <a href="/change-password/{{ current_user.id }}" style="text-decoration: none; color: white;">Change Password</a>
-        </button>
+        <button style="width: 100%; padding: 10px; background-color: #ff7f00; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-bottom: 10px;"><a href="/change-password/{{ customer.id }}" style="text-decoration: none; text: white;">Change Password</a></button>
 
-        <button
-            style="width: 100%; padding: 10px; background-color: white; color: #ff7f00; border: 2px solid #ff7f00; border-radius: 5px; font-size: 16px; cursor: pointer;"
-            onmouseover="this.style.backgroundColor='#white'; this.style.color='#ff7f00'; this.style.transform='scale(1.05)';"
-            onmouseout="this.style.backgroundColor='white'; this.style.color='#ff7f00'; this.style.transform='scale(1)';">
-            <a href="/logout" style="text-decoration: none; color: #ff7f00;">Log Out</a>
-        </button>
+
+        <button style="width: 100%; padding: 10px; background-color: white; color: #ff7f00; border: 2px solid #ff7f00; border-radius: 5px; font-size: 16px; cursor: pointer;">Log Out</button>
     </div>
 </div>
-
 
 {% endblock %}
