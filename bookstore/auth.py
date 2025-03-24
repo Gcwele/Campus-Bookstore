@@ -40,12 +40,15 @@ def sign_up():
     return render_template('signup.html', form=form)
 
 
+
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
+
         customer = Customer.query.filter_by(email=email).first()
 
         if customer:
