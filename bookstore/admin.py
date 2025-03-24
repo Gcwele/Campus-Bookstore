@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, flash, send_from_directory, redirect
 from flask_login import login_required, current_user
-from .forms import ShopItemsForm
+from .forms import ShopItemsForm, OrderForm
 from werkzeug.utils import secure_filename
-from .models import Product
+from .models import Product, Customer, Order
 from . import db
 
 admin = Blueprint('admin', __name__)
@@ -21,10 +21,14 @@ def add_shop_items():
             current_price = form.current_price.data
             previous_price = form.previous_price.data
             in_stock = form.in_stock.data
+
+
             flash_sale = form.flash_sale.data
+
 
             file = form.product_picture.data
             file_name = secure_filename(file.filename)
+            department=form.department.data
 
             file_path = f'./media/{file_name}'
 
@@ -35,7 +39,10 @@ def add_shop_items():
             new_shop_item.current_price = current_price
             new_shop_item.previous_price = previous_price
             new_shop_item.in_stock = in_stock
+            new_shop_item.department=department
+
             new_shop_item.flash_sale = flash_sale
+
 
             new_shop_item.product_picture = file_path
 
@@ -68,24 +75,29 @@ def shop_items():
 
     return render_template('404.html')
 
-@admin.route('/update-item/<int:item_id>', methods=['GET','POST'])
+@admin.route('/update-item/<int:item_id>', methods=['GET', 'POST'])
 @login_required
 def update_item(item_id):
-    if current_user.email =="Admin@gmail.com":
+    if current_user.email == "Admin@gmail.com":
         form = ShopItemsForm()
+
         item_to_update = Product.query.get(item_id)
 
-        form.product_name.render_kw ={'placeholder' :item_to_update.product_name}
+        form.product_name.render_kw = {'placeholder': item_to_update.product_name}
         form.previous_price.render_kw = {'placeholder': item_to_update.previous_price}
         form.current_price.render_kw = {'placeholder': item_to_update.current_price}
         form.in_stock.render_kw = {'placeholder': item_to_update.in_stock}
+        form.department.render_kw = {'placeholder': item_to_update.department}
+
         form.flash_sale.render_kw = {'placeholder': item_to_update.flash_sale}
 
         if form.validate_on_submit():
             product_name = form.product_name.data
-            current_price= form.current_price.data
+            current_price = form.current_price.data
             previous_price = form.previous_price.data
             in_stock = form.in_stock.data
+            department = form.department.data
+
             flash_sale = form.flash_sale.data
 
             file = form.product_picture.data
@@ -100,19 +112,21 @@ def update_item(item_id):
                                                                 current_price=current_price,
                                                                 previous_price=previous_price,
                                                                 in_stock=in_stock,
+
                                                                 flash_sale=flash_sale,
                                                                 product_picture=file_path))
-                db.session.commit()
-                flash(f'{product_name} updated successfully')
-                print('Product Updated')
 
+                db.session.commit()
+                flash(f'{product_name} updated Successfully')
+                print('Product Upadted')
                 return redirect('/shop-items')
             except Exception as e:
-                print('Item not updated', e)
-                flash('Item not updated !!!')
+                print('Product not Upated', e)
+                flash('Item Not Updated!!!')
 
-        return render_template('update_item.html', form = form)
+        return render_template('update_item.html', form=form)
     return render_template('404.html')
+
 
 @admin.route('/delete-item/<int:item_id>', methods=['GET', 'POST'])
 @login_required
@@ -132,3 +146,73 @@ def delete_item(item_id):
     return render_template('404.html')
 
 
+@admin.route('/view-orders')
+@login_required
+def order_view():
+    if current_user.email.lower() == "admin@gmail.com":
+
+        orders = Order.query.all()
+        print("Orders in DB:", orders)  # Debugging
+        if not orders:
+            flash("No orders found!")
+        return render_template('view_orders.html', orders=orders)
+    return render_template('404.html')
+
+
+
+
+
+
+
+@admin.route('/update-order/<int:order_id>', methods=['GET', 'POST'])
+@login_required
+def update_order(order_id):
+    if current_user.email == 'Admin@gmail.com':
+        form = OrderForm()
+        order = Order.query.get(order_id)
+
+        if form.validate_on_submit():
+            status = form.order_status.data
+            order.status = status
+
+            try:
+                db.session.commit()
+                flash(f'Order {order_id} Updated successfully')
+                return redirect('/view-orders')
+            except Exception as e:
+                print(e)
+                flash(f'Order {order_id} not updated')
+                return redirect('/view-orders')
+
+        return render_template('order_update.html', form=form)
+
+
+
+
+@admin.route('/customers')
+@login_required
+def display_customers():
+    if current_user.email =="Admin@gmail.com":
+        customers = Customer.query.all()
+        return render_template('customers.html', customers=customers)
+    return render_template('404.html')
+
+
+@admin.route('/admin-page')
+@login_required
+def admin_page():
+    if current_user.email =="Admin@gmail.com":
+        return render_template('admin.html')
+    return render_template('404.html')
+
+
+
+
+@admin.route('/department/<department_name>', methods=['GET'])
+@login_required
+def department_books(department_name):
+    if current_user.email == "admin@dut.ac.za":
+        # Query the products in the selected department
+        items = Product.query.filter_by(department=department_name).all()
+        return render_template('bookDepartment.html', items=items, department=department_name)
+    return render_template('404.html')
